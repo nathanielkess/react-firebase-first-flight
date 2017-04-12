@@ -11,19 +11,25 @@ class App extends Component {
       newData: '',
     }
 
+    
+    this.dataRef = null;
+
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
 
   }
 
   componentDidMount(){
-    console.log('did mount');
-    database.ref().on('value', (snapshot) => {
-      console.log('THE DATA CHANGED!', snapshot.val());
+
+    this.dataRef = database.ref();
+
+    this.dataRef.on('child_added', (snapshot) => {
+      console.log('chlid added', snapshot.val());
       this.setState({
         data:snapshot.val(),
       })
     });
+
   }
 
   handleChange(event){
@@ -35,10 +41,7 @@ class App extends Component {
 
   handleSubmit(event){
     event.preventDefault();
-    const newData = database
-      .ref()
-      .child('AMAZINGNEWEDATA')
-      .set(this.state.newData);
+    this.dataRef.push(this.state.newData);
   }
 
   render() {
